@@ -1,0 +1,20 @@
+[misc]
+FROM="yourbotbox@gmail.com"
+GUSER_NAME="yourbotbox@gmail.com"
+GPASS="hunter101110101"
+OUTPUT_DIRECTORY="\\Users\\you\\Desktop\\code\\projectpath\\"
+TO="yourfriends@gmail.com"
+TESTMESS="""This is the weekly basketball scheduler! Respond with your availability in order to sign up for basketball this week!"""
+
+[twilio]
+ACCOUNT_SID="sampleAC0BDHSkDMBJKSDMDf60b"
+AUTH_TOKEN="sampleA9277ea95c857"
+twilio_number="8675309"
+my_cell="1-800-COLLECT"
+body="You're a wizard, Harry!"
+
+[weather]
+cls.owm_key="2b5d9c4asdkjl2342274"
+cls.hometown="5347322"
+cls.nearbytown="5233315"
+cls.anotherplace="5226625"
