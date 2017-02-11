@@ -37,11 +37,13 @@ class ESlave(object):
             processes the boxes
 
             """
-            host = imaplib.IMAP4_SSL('imap.gmail.com')
-            _gmail_connect(host)
-            _query_boxes(host)
-            _open_box(host, "inbox")
-            #_process_mailbox(host) does not work
+            connection = imaplib.IMAP4_SSL('imap.gmail.com')
+            print connection.recent()
+            _gmail_login(connection)
+            _check_boxes(connection)
+            if (_open_box(connection, "inbox") != -1):
+                print "~~downloading new messages~~"
+                #process_mailbox(host) #does not work
 
         def check_weather(cls):
             """Gets weather information from the Openweather API
@@ -105,13 +107,12 @@ def _weather_report(jstream):
     print "Rain: '%r' inches" %  jstream.get('rain')
     print "Wind Speed: %s mph\n" % jstream.get('wind').get('speed')
 
-def _gmail_connect(connection):
+def _gmail_login(connection):
     """Logs into gmail.
 
     Args:
         connection =  imap connection
-        user_name = gmail user name (use GUSER_NAME from myconfig)
-        password = gmail password (use GPASS from myconfig)
+
     Raises:
         IMAP4.error: for failed login/bad credentials
 
@@ -123,7 +124,7 @@ def _gmail_connect(connection):
         print "~~login failed ~~"
 
 
-def _query_boxes(connection):
+def _check_boxes(connection):
     """Checks the available boxes and prints them.
 
     Args:
@@ -142,11 +143,17 @@ def _open_box(connection, which_box):
         connection - imap connection
         which_box - which box to perform operations on
 
+    Returns:
+        -1 if there are no new messages, 1 if there are
+
     """
     response = connection.select(which_box)
     if response == "OK":
         print "~~Processing selected box~~"
-            #M.close()
+    if connection.recent() == "[None]":
+        print "~~ no new messages~~"
+        connection.close()
+        return -1
 
 def _process_mailbox(connection):
     """Returns the datetime and and payload for the box
@@ -155,14 +162,14 @@ def _process_mailbox(connection):
 
     """
     print "Messages:"
-    rv, kys = connection.search(None,"ALL")
-    if rv != 'OK':
+    tr, step = connection.search(None,"ALL")
+    if tr != 'OK':
         print "~~No messages found!~~"
         return
 
-    for num in kys[0].split():
-        rv, kys = connection.fetch(num, '(RFC822)')
-        if rv != 'OK':
+    for num in step[0].split():
+        tr, step = connection.fetch(num, '(RFC822)')
+        if tr != 'OK':
             print "~~ERROR getting message~~", num
             return
 
