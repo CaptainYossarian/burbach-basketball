@@ -10,7 +10,7 @@ import smsapi
 
 from twilio.rest import TwilioRestClient
 
-#set myconfig file path. create a SafemyconfigParser. load 'myconfig'.txt INI file
+#creates config file path. CreateS a SafeConfigParser. Loads filepath.txt INI file
 configfile = "/home/drg/cs/pycode/Burbach/burbach.config.txt"
 myconfig = ConfigParser.SafeConfigParser()
 myconfig.read(configfile)
@@ -43,12 +43,12 @@ class ESlave(object):
 
             """
 
-            print("~~Your wish is my command. Sending E-mail out!")
+            print("                ~~Your wish is my command. Sending E-mail out!~~")
             server_ssl = smtplib.SMTP_SSL("smtp.gmail.com",465)
             server_ssl.ehlo()
-            server_ssl.login(self.guser_name, self.gpass)
+            server_ssl.login(GUSER_NAME, GPASS)
             server_ssl.sendmail(FROM, TO, TESTMESS)
-            print("~~E-mail sent.")
+            print("                ~~E-mail sent.~~")
 
         def send_sms_out(self):
             """Sends a text sms out to a recipient. Uses TwilioRestClient.
@@ -79,7 +79,7 @@ class ESlave(object):
             _gmail_connect(host)
             _query_boxes(host)
             _open_box(host, "inbox")
-            _process_mailbox(host)
+            #_process_mailbox(host) does not work
 
         def check_weather(cls):
             """Gets weather information from the Openweather API
