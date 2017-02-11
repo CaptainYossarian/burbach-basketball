@@ -14,7 +14,7 @@ my_cell="1-800-COLLECT"
 body="You're a wizard, Harry!"
 
 [weather]
-cls.owm_key="2b5d9c4asdkjl2342274"
-cls.hometown="5347322"
-cls.nearbytown="5233315"
-cls.anotherplace="5226625"
+owm_key="2b5d9c4asdkjl2342274"
+hometown="5347322"
+nearbytown="5233315"
+anotherplace="5226625"
