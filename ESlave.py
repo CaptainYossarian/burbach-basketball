@@ -38,13 +38,14 @@ class ESlave(object):
 
             """
             connection = imaplib.IMAP4_SSL('imap.gmail.com')
-            print connection.recent()
             _gmail_login(connection)
-            _check_boxes(connection)
-            if (_open_box(connection, "inbox") != -1):
-                print "~~downloading new messages~~"
+            #Runs if there are new messages. [None]returned = no new messages
+            print connection.list("inbox")
+            if (connection.recent() != ('OK',[None]) ):
+                print "~~checking messages, downloading new messages~~"
+                _check_boxes(connection)
+                _open_box(connection,"inbox")
                 #process_mailbox(host) #does not work
-
         def check_weather(cls):
             """Gets weather information from the Openweather API
             for the coming week(currently displays for one day only) and prints.
@@ -143,17 +144,10 @@ def _open_box(connection, which_box):
         connection - imap connection
         which_box - which box to perform operations on
 
-    Returns:
-        -1 if there are no new messages, 1 if there are
-
     """
     response = connection.select(which_box)
     if response == "OK":
         print "~~Processing selected box~~"
-    if connection.recent() == "[None]":
-        print "~~ no new messages~~"
-        connection.close()
-        return -1
 
 def _process_mailbox(connection):
     """Returns the datetime and and payload for the box

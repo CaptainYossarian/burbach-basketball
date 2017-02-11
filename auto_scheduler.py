@@ -23,8 +23,9 @@ def main():
 
     Charles = ESlave()
     Charles.check_weather() #works
+    print "\n                ~~Weather checked~~\n"
     Charles.check_mail() #works
-    print "\n                ~~Weather and mail checked~~\n"
+    print "\n                ~~Mail checked~~\n"
 
     if (NOW == 5 and TESTING == False): #Sunday=6, Monday = 0
         Charles.send_email_out()#works
