@@ -10,7 +10,8 @@ import smsapi
 
 from twilio.rest import TwilioRestClient
 
-#creates config file path. CreateS a SafeConfigParser. Loads filepath.txt INI file
+#config file points to the filepath of your local config file. see the sample
+#for more details on how to configure
 configfile = "/home/drg/cs/pycode/Burbach/burbach.config.txt"
 myconfig = ConfigParser.SafeConfigParser()
 myconfig.read(configfile)
@@ -29,13 +30,32 @@ class ESlave(object):
 
         def __init__(self):
             """
-            Args:
-                GUSER_NAME = gmail username specified in your myconfig
-                GPASS = a gmail password specified in your myconfig
+            """
+
+        def check_mail(self):
+            """Logs into a mail account. Checks the messages. Opens and
+            processes the boxes
 
             """
-            self.guser_name = GUSER_NAME
-            self.gpass = GPASS
+            host = imaplib.IMAP4_SSL('imap.gmail.com')
+            _gmail_connect(host)
+            _query_boxes(host)
+            _open_box(host, "inbox")
+            #_process_mailbox(host) does not work
+
+        def check_weather(cls):
+            """Gets weather information from the Openweather API
+            for the coming week(currently displays for one day only) and prints.
+
+            """
+            owm_key = myconfig.get('weather','owm_key')
+            fairfax = myconfig.get('weather','fairfax')
+
+            url = "http://api.openweathermap.org/data/2.5/weather?id=5347322&APPID=2b5d9c4fe3c6417dfc18b1aa9a3f1974&units=imperial"
+            geturl = requests.get(url)
+            getjson = geturl.json()
+            formated_json = json.loads(json.dumps(getjson))
+            _weather_report(formated_json)
 
         def send_email_out(self):
             """Sends an email from an ESlave object TO all recpients via SMTP_SSL on port 465
@@ -58,7 +78,7 @@ class ESlave(object):
 
             """
 
-            print "~~Your wish is my command. Sending SMS-Texts out!"
+            print "~~Your wish is my command. Sending SMS-Texts out!~~"
             ACCOUNT_SID = myconfig.get('twilio','ACCOUNT_SID')
             AUTH_TOKEN = myconfig.get('twilio','AUTH_TOKEN')
 
@@ -68,39 +88,16 @@ class ESlave(object):
 
             client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
             client.messages.create(to=my_cell,from_=twilio_number,body=body)
-            print "~~Text messages sent."
+            print "~~Text messages sent.~~"
 
-        def check_mail(self):
-            """Logs into a mail account. Checks the messages. Opens and
-            processes the boxes
 
-            """
-            host = imaplib.IMAP4_SSL('imap.gmail.com')
-            _gmail_connect(host)
-            _query_boxes(host)
-            _open_box(host, "inbox")
-            #_process_mailbox(host) does not work
-
-        def check_weather(cls):
-            """Gets weather information from the Openweather API
-            for the coming week(currently displays for one day only) and prints.
-
-            """
-            cls.owm_key = myconfig.get('weather','cls.owm_key')
-            cls.fairfax = myconfig.get('weather','cls.fairfax')
-
-            url = "http://api.openweathermap.org/data/2.5/weather?id=5347322&APPID=2b5d9c4fe3c6417dfc18b1aa9a3f1974&units=imperial"
-            r = requests.get(url)
-            p = r.json()
-            q = json.loads(json.dumps(p))
-            _weather_report(q)
 
 #Helper methods to ESlave()
 def _weather_report(jstream):
     """Prints relevant weather information in a pre-arranged order.
 
     Args:
-        jstream = json stream
+        jstream = formatted json stream
 
     """
     print "\nThe temperature in %s on %s is:\n" % (jstream.get('name'), datetime.date.today())
@@ -108,11 +105,11 @@ def _weather_report(jstream):
     print "Rain: '%r' inches" %  jstream.get('rain')
     print "Wind Speed: %s mph\n" % jstream.get('wind').get('speed')
 
-def _gmail_connect(M):
+def _gmail_connect(connection):
     """Logs into gmail.
 
     Args:
-        M =  imap connection
+        connection =  imap connection
         user_name = gmail user name (use GUSER_NAME from myconfig)
         password = gmail password (use GPASS from myconfig)
     Raises:
@@ -120,59 +117,60 @@ def _gmail_connect(M):
 
     """
     try:
-        M.login("novabasketballscheduler","joeandfriends34")
+        connection.login(GUSER_NAME,GPASS)
         print "~~connection established with {0} ~~".format(GUSER_NAME)
     except imaplib.IMAP4.error:
         print "~~login failed ~~"
 
 
-def _query_boxes(M):
+def _query_boxes(connection):
     """Checks the available boxes and prints them.
 
     Args:
-        M =  imap connection
+        connection =  imap connection
 
     """
-    response, mailboxes = M.list()
+    response, mailboxes = connection.list()
     if response == 'OK':
        print "Mailboxes:"
        print mailboxes
 
-def _open_box(M, which_box):
+def _open_box(connection, which_box):
     """Selects which box on an email client to perform operations on and opens it.
 
     Args:
-        M - imap connection
+        connection - imap connection
         which_box - which box to perform operations on
 
     """
-    response = M.select(which_box)
+    response = connection.select(which_box)
     if response == "OK":
-        print "~~Processing selected box"
+        print "~~Processing selected box~~"
             #M.close()
 
-def _process_mailbox(M):
+def _process_mailbox(connection):
     """Returns the datetime and and payload for the box
 
-       M = imap connection
+       connection = imap connection
 
     """
     print "Messages:"
-    rv, kys = M.search(None,"ALL")
+    rv, kys = connection.search(None,"ALL")
     if rv != 'OK':
-        print "~~No messages found!"
+        print "~~No messages found!~~"
         return
 
     for num in kys[0].split():
-        rv, kys = M.fetch(num, '(RFC822)')
+        rv, kys = connection.fetch(num, '(RFC822)')
         if rv != 'OK':
-            print "~~ERROR getting message", num
+            print "~~ERROR getting message~~", num
             return
 
         msg = email.message_from_string(kys[0][1])
         print 'Message %s: %s' % (num, msg['Subject'])
         print 'Raw date:', msg['Date']
         date_tuple = email.utils.parsedate_tz(msg['Date'])
+
         if date_tuple:
             local_date = datetime.datetime.fromtimestamp(
                 email.utils.mktime_tz(date_tuple))
