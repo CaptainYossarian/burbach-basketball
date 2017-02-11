@@ -10,18 +10,18 @@ import smsapi
 
 from twilio.rest import TwilioRestClient
 
-#set config file path. create a SafeConfigParser. load 'config'.txt INI file
-myconfigfile = "/home/drg/cs/pycode/Burbach/burbach.config.txt"
-goodies = ConfigParser.SafeConfigParser()
-goodies.read(myconfigfile)
+#set myconfig file path. create a SafemyconfigParser. load 'myconfig'.txt INI file
+configfile = "/home/drg/cs/pycode/Burbach/burbach.config.txt"
+myconfig = ConfigParser.SafeConfigParser()
+myconfig.read(configfile)
 
-#set config variables from 'config'.txt. tuple1 = config section. tuple2 = config value
-FROM = goodies.get('misc','FROM')
-GUSER_NAME = goodies.get('misc','GUSER_NAME')
-GPASS = goodies.get('misc','GPASS')
-OUTPUT_DIRECTORY = goodies.get('misc','OUTPUT_DIRECTORY')
-TO = goodies.get('misc','TO')
-TESTMESS = goodies.get('misc','TESTMESS')
+#set myconfig variables from 'myconfig'.txt. tuple1 = myconfig section. tuple2 = myconfig value
+FROM = myconfig.get('misc','FROM')
+GUSER_NAME = myconfig.get('misc','GUSER_NAME')
+GPASS = myconfig.get('misc','GPASS')
+OUTPUT_DIRECTORY = myconfig.get('misc','OUTPUT_DIRECTORY')
+TO = myconfig.get('misc','TO')
+TESTMESS = myconfig.get('misc','TESTMESS')
 
 
 class ESlave(object):
@@ -30,8 +30,8 @@ class ESlave(object):
         def __init__(self):
             """
             Args:
-                GUSER_NAME = gmail username specified in your config
-                GPASS = a gmail password specified in your config
+                GUSER_NAME = gmail username specified in your myconfig
+                GPASS = a gmail password specified in your myconfig
 
             """
             self.guser_name = GUSER_NAME
@@ -53,18 +53,18 @@ class ESlave(object):
         def send_sms_out(self):
             """Sends a text sms out to a recipient. Uses TwilioRestClient.
 
-            Note: goodies.get(___,___) pulls values from your config file via
-            a SafeConfigParser named goodies.
+            Note: myconfig.get(___,___) pulls values from your myconfig file via
+            a SafemyconfigParser named myconfig.
 
             """
 
             print "~~Your wish is my command. Sending SMS-Texts out!"
-            ACCOUNT_SID = goodies.get('twilio','ACCOUNT_SID')
-            AUTH_TOKEN = goodies.get('twilio','AUTH_TOKEN')
+            ACCOUNT_SID = myconfig.get('twilio','ACCOUNT_SID')
+            AUTH_TOKEN = myconfig.get('twilio','AUTH_TOKEN')
 
-            twilio_number = goodies.get('twilio','twilio_number')
-            my_cell = goodies.get('twilio','my_cell')
-            body = goodies.get('twilio','body')
+            twilio_number = myconfig.get('twilio','twilio_number')
+            my_cell = myconfig.get('twilio','my_cell')
+            body = myconfig.get('twilio','body')
 
             client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
             client.messages.create(to=my_cell,from_=twilio_number,body=body)
@@ -79,15 +79,15 @@ class ESlave(object):
             _gmail_connect(host)
             _query_boxes(host)
             _open_box(host, "inbox")
-            #_process_mailbox(host)
+            _process_mailbox(host)
 
         def check_weather(cls):
             """Gets weather information from the Openweather API
             for the coming week(currently displays for one day only) and prints.
 
             """
-            cls.owm_key = goodies.get('weather','cls.owm_key')
-            cls.fairfax = goodies.get('weather','cls.fairfax')
+            cls.owm_key = myconfig.get('weather','cls.owm_key')
+            cls.fairfax = myconfig.get('weather','cls.fairfax')
 
             url = "http://api.openweathermap.org/data/2.5/weather?id=5347322&APPID=2b5d9c4fe3c6417dfc18b1aa9a3f1974&units=imperial"
             r = requests.get(url)
@@ -113,17 +113,17 @@ def _gmail_connect(M):
 
     Args:
         M =  imap connection
-        user_name = gmail user name (use GUSER_NAME from config)
-        password = gmail password (use GPASS from config)
+        user_name = gmail user name (use GUSER_NAME from myconfig)
+        password = gmail password (use GPASS from myconfig)
     Raises:
         IMAP4.error: for failed login/bad credentials
 
     """
     try:
         M.login("novabasketballscheduler","joeandfriends34")
-        print "~~connection established with {0}".format(GUSER_NAME)
+        print "~~connection established with {0} ~~".format(GUSER_NAME)
     except imaplib.IMAP4.error:
-        print "~~login failed"
+        print "~~login failed ~~"
 
 
 def _query_boxes(M):

@@ -7,6 +7,8 @@ import sqlite3
 
 from ESlave import *
 
+NOW = datetime.datetime.today().weekday()
+TESTING = False
 
 def main():
     """Sunday shoutout! We spin up our virtual ESlave() butler named Charles,
@@ -19,22 +21,18 @@ def main():
 
     """
     Charles = ESlave()
-    #globals
+    Charles.check_weather() #works
+    Charles.check_mail() #works
+    print "\n                ~~Weather and mail checked~~\n"
     NOW = datetime.datetime.today().weekday()
-    TEST_FLAG = False
 
-    #loaded_flag = False for testing to not overuse free api calls
+    if (NOW == 5 & TESTING == False): #Sunday=6, Monday = 0
+        Charles.send_email_out()
+        Charles.send_sms_out()
+        print "\n                ~~E-mail and SMS-Text messages sent ~~\n"
+    else:
+        print "\n                ~~Done~~\n"
 
-    if NOW == 0: #Sunday=6, Monday = 0
-        Charles.check_weather()
-        Charles.check_mail()
-
-        if TEST_FLAG == False:
-            Charles.send_email_out()
-            #Charles.send_sms_out()
-            print "\n                ~~Done, Boss.~~\n"
-        else:
-            print "\n~~No action taken~~\n"
 
 if __name__ == '__main__':
     main()
