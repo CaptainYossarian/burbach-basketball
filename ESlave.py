@@ -40,7 +40,6 @@ class ESlave(object):
             connection = imaplib.IMAP4_SSL('imap.gmail.com')
             _gmail_login(connection)
             #Runs if there are new messages. [None]returned = no new messages
-            print connection.list("inbox")
             if (connection.recent() != ('OK',[None]) ):
                 print "~~checking messages, downloading new messages~~"
                 _check_boxes(connection)
@@ -66,7 +65,7 @@ class ESlave(object):
 
             """
 
-            print("                ~~Your wish is my command. Sending E-mail out!~~")
+            print("--> 'Your wish is my command. Sending E-mail out!'")
             server_ssl = smtplib.SMTP_SSL("smtp.gmail.com",465)
             server_ssl.ehlo()
             server_ssl.login(GUSER_NAME, GPASS)
@@ -81,7 +80,7 @@ class ESlave(object):
 
             """
 
-            print "~~Your wish is my command. Sending SMS-Texts out!~~"
+            print "--> 'Your wish is my command. Sending SMS-Texts out!' "
             ACCOUNT_SID = myconfig.get('twilio','ACCOUNT_SID')
             AUTH_TOKEN = myconfig.get('twilio','AUTH_TOKEN')
 
@@ -91,7 +90,7 @@ class ESlave(object):
 
             client = TwilioRestClient(ACCOUNT_SID, AUTH_TOKEN)
             client.messages.create(to=my_cell,from_=twilio_number,body=body)
-            print "~~Text messages sent.~~"
+            print "            ~~Text messages sent.~~"
 
 
 
