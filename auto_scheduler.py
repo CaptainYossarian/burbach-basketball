@@ -8,7 +8,7 @@ import sqlite3
 from ESlave import *
 
 NOW = datetime.datetime.today().weekday()
-TESTING = False
+TESTING = True
 
 def main():
     """Sunday shoutout! We spin up our virtual ESlave() butler named Charles,
@@ -32,7 +32,7 @@ def main():
         Charles.send_sms_out()#works
         print "\n            ~~E-mail and SMS-Text messages sent ~~\n"
     else:
-        print "\n            ~~Done~~\n"
+        print "\n                ~~Done~~\n"
 
 
 if __name__ == '__main__':

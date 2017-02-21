@@ -151,7 +151,8 @@ def _open_box(connection, which_box):
 def _process_mailbox(connection):
     """Returns the datetime and and payload for the box
 
-       connection = imap connection
+    Args:
+        connection = imap connection
 
     """
     print "Messages:"
